@@ -36,7 +36,7 @@ retry_stagger: 5
 kube_cert_group: kube-cert
 
 # Cluster Loglevel configuration
-kube_log_level: 2
+kube_log_level: 5
 
 # Users to create for basic auth in Kubernetes API via HTTP
 # Optionally add groups for user
@@ -50,8 +50,8 @@ kube_users:
 
 ## It is possible to activate / deactivate selected authentication methods (basic auth, static token auth)
 #kube_oidc_auth: false
-#kube_basic_auth: false
-#kube_token_auth: false
+kube_basic_auth: true
+kube_token_auth: true
 
 
 ## Variables for OpenID Connect Configuration https://kubernetes.io/docs/admin/authentication/
@@ -67,17 +67,17 @@ kube_users:
 
 # Choose network plugin (calico, weave or flannel)
 # Can also be set to 'cloud', which lets the cloud provider setup appropriate routing
-kube_network_plugin: calico
+kube_network_plugin: weave
 
 # weave's network password for encryption
 # if null then no network encryption
 # you can use --extra-vars to pass the password in command line
-weave_password: EnterPasswordHere
+weave_password: null
 
 # Weave uses consensus mode by default
 # Enabling seed mode allow to dynamically add or remove hosts
 # https://www.weave.works/docs/net/latest/ipam/
-weave_mode_seed: false
+weave_mode_seed: true
 
 # This two variable are automatically changed by the weave's role, do not manually change these values
 # To reset values :
@@ -146,7 +146,7 @@ k8s_image_pull_policy: IfNotPresent
 dashboard_enabled: true
 
 # Monitoring apps for k8s
-efk_enabled: false
+efk_enabled: true
 
 # Helm deployment
 helm_enabled: false
@@ -154,8 +154,14 @@ helm_enabled: false
 # Istio depoyment
 istio_enabled: false
 
+# Traefik deployment
+traefik_enabled: true
+
+# Rook deployment
+#rook_enabled: true
+
 # Make a copy of kubeconfig on the host that runs Ansible in GITDIR/artifacts
-# kubeconfig_localhost: false
+kubeconfig_localhost: true
 # Download kubectl onto the host that runs Ansible in GITDIR/artifacts
 # kubectl_localhost: false
 
@@ -169,7 +175,7 @@ istio_enabled: false
 
 # A comma separated list of levels of node allocatable enforcement to be enforced by kubelet.
 # Acceptible options are 'pods', 'system-reserved', 'kube-reserved' and ''. Default is "".
-# kubelet_enforce_node_allocatable: pods
+kubelet_enforce_node_allocatable: pods
 
 ## Supplementary addresses that can be added in kubernetes ssl keys.
 ## That can be usefull for example to setup a keepalived virtual IP

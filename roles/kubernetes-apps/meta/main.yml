@@ -25,3 +25,15 @@ dependencies:
     tags:
       - apps
       - istio
+
+  - role: kubernetes-apps/traefik
+    when: traefik_enabled
+    tags:
+      - apps
+      - traefik
+
+#  - role: kubernetes-apps/rook
+#    when: rook_enabled
+#    tags:
+#      - apps
+#      - rook

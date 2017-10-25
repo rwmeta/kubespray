@@ -1,0 +1,40 @@
+---
+- name: "Traefik | Write Traefik manifests (RBAC)"
+  template:
+    src: "{{ item }}"
+    dest: "{{ kube_config_dir }}/{{ item }}"
+  with_items:
+    - "traefik-sa.yml"
+    - "traefik-clusterrolebinding.yml"
+  run_once: true
+  when: rbac_enabled
+
+- name: "Traefik | Create Serviceaccount and Clusterrolebinding (RBAC)"
+  command: "{{ bin_dir }}/kubectl apply -f {{ kube_config_dir }}/{{ item }} -n {{ system_namespace }}"
+  with_items:
+    - "traefik-sa.yml"
+    - "traefik-clusterrolebinding.yml"
+  run_once: true
+  when: rbac_enabled
+
+- name: "Traefik | Write traefik DaemonSet"
+  template:
+    src: traefik-ds.yml.j2
+    dest: "{{ kube_config_dir }}/traefik-ds.yaml"
+  register: traefik_daemon_set_manifest
+
+- name: "Traefik | Create Traefik DaemonSet"
+  command: "{{ bin_dir }}/kubectl apply -f {{ kube_config_dir }}/traefik-ds.yaml -n {{ system_namespace }}"
+  run_once: true
+  when: traefik_daemon_set_manifest.changed
+
+- name: "Traefik | Write Traefik service "
+  template:
+    src: traefik-service.yml.j2
+    dest: "{{ kube_config_dir }}/traefik-service.yaml"
+  register: traefik_service_manifest
+
+- name: "ElasticSearch | Create ES service"
+  command: "{{ bin_dir }}/kubectl apply -f {{ kube_config_dir }}/traefik-service.yaml -n {{ system_namespace }}"
+  run_once: true
+  when: traefik_service_manifest.changed
