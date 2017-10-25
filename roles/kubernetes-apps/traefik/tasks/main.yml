@@ -34,7 +34,18 @@
     dest: "{{ kube_config_dir }}/traefik-service.yaml"
   register: traefik_service_manifest
 
-- name: "ElasticSearch | Create ES service"
+- name: "Traefik | Create traefik service"
   command: "{{ bin_dir }}/kubectl apply -f {{ kube_config_dir }}/traefik-service.yaml -n {{ system_namespace }}"
   run_once: true
   when: traefik_service_manifest.changed
+
+- name: "Traefik | Write Traefik ui service "
+  template:
+    src: traefik-ui.yml.j2
+    dest: "{{ kube_config_dir }}/traefik-ui.yaml"
+  register: traefik_ui_manifest
+
+- name: "Traefik | Create traefik ui service"
+  command: "{{ bin_dir }}/kubectl apply -f {{ kube_config_dir }}/traefik-ui.yaml -n {{ system_namespace }}"
+  run_once: true
+  when: traefik_ui_manifest.changed
