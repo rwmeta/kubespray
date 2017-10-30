@@ -3,7 +3,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: traefik-ingress-service
-  namespace:  {{ system_namespace }}
+  namespace:  "{{ system_namespace }}"
 spec:
   selector:
     k8s-app: traefik-ingress-lb
