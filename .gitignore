@@ -93,3 +93,6 @@ target/
 # virtualenv
 venv/
 ENV/
+
+# inventory.cfg
+inventory/inventory.cfg

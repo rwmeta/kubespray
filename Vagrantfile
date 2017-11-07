@@ -18,7 +18,7 @@ SUPPORTED_OS = {
 }
 
 # Defaults for config options defined in CONFIG
-$num_instances = 3
+$num_instances = 5
 $instance_name_prefix = "k8s"
 $vm_gui = false
 $vm_memory = 2048
@@ -27,7 +27,7 @@ $shared_folders = {}
 $forwarded_ports = {}
 $subnet = "172.17.8"
 $os = "ubuntu"
-$network_plugin = "flannel"
+$network_plugin = "weave"
 # The first three nodes are etcd servers
 $etcd_instances = $num_instances
 # The first two nodes are kube masters
@@ -143,7 +143,7 @@ Vagrant.configure("2") do |config|
           ansible.sudo = true
           ansible.limit = "all"
           ansible.host_key_checking = false
-          ansible.raw_arguments = ["--forks=#{$num_instances}", "--flush-cache"]
+          ansible.raw_arguments = ["--forks=#{$num_instances}", "--flush-cache", "-vv"]
           ansible.host_vars = host_vars
           #ansible.tags = ['download']
           ansible.groups = {
