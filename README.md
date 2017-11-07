@@ -54,7 +54,7 @@ Versions of supported components
 --------------------------------
 
 
-[kubernetes](https://github.com/kubernetes/kubernetes/releases) v1.8.1 <br>
+[kubernetes](https://github.com/kubernetes/kubernetes/releases) v1.8.2 <br>
 [etcd](https://github.com/coreos/etcd/releases) v3.2.4 <br>
 [flanneld](https://github.com/coreos/flannel/releases) v0.8.0 <br>
 [calico](https://docs.projectcalico.org/v2.5/releases/) v2.5.0 <br>
@@ -107,7 +107,7 @@ See also [Network checker](docs/netcheck.md).
  - [Deploy a Kubernetes Cluster with Kubespray (video)](https://www.youtube.com/watch?v=N9q51JgbWu8)
 
 ## Tools and projects on top of Kubespray
- - [Digital Rebar](https://github.com/digitalrebar/digitalrebar)
+ - [Digital Rebar Provision](https://github.com/digitalrebar/provision/blob/master/doc/integrations/ansible.rst)
  - [Kubespray-cli](https://github.com/kubespray/kubespray-cli)
  - [Fuel-ccp-installer](https://github.com/openstack/fuel-ccp-installer)
  - [Terraform Contrib](https://github.com/kubernetes-incubator/kubespray/tree/master/contrib/terraform)

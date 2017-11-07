@@ -32,12 +32,14 @@
       tags: rkt
       when: "'rkt' in [etcd_deployment_type, kubelet_deployment_type, vault_deployment_type]"
     - { role: download, tags: download, skip_downloads: false }
+  environment: "{{proxy_env}}"
 
 - hosts: etcd:k8s-cluster:vault
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
     - { role: kubespray-defaults, when: "cert_management == 'vault'" }
     - { role: vault, tags: vault, vault_bootstrap: true, when: "cert_management == 'vault'" }
+  environment: "{{proxy_env}}"
 
 - hosts: etcd
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
@@ -56,12 +58,14 @@
   roles:
     - { role: kubespray-defaults}
     - { role: vault, tags: vault, when: "cert_management == 'vault'"}
+  environment: "{{proxy_env}}"
 
 - hosts: k8s-cluster
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
   roles:
     - { role: kubespray-defaults}
     - { role: kubernetes/node, tags: node }
+  environment: "{{proxy_env}}"
 
 - hosts: kube-master
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
@@ -98,6 +102,7 @@
     - { role: kubespray-defaults}
     - { role: dnsmasq, when: "dns_mode == 'dnsmasq_kubedns'", tags: dnsmasq }
     - { role: kubernetes/preinstall, when: "dns_mode != 'none' and resolvconf_mode == 'host_resolvconf'", tags: resolvconf }
+  environment: "{{proxy_env}}"
 
 - hosts: kube-master[0]
   any_errors_fatal: "{{ any_errors_fatal | default(true) }}"
