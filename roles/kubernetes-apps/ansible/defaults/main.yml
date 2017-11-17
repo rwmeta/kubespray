@@ -48,6 +48,11 @@ dashboard_cpu_limit: 100m
 dashboard_memory_limit: 256M
 dashboard_cpu_requests: 50m
 dashboard_memory_requests: 64M
+dashboard_ingres: true
+dashboard_host: ""
+dashboard_secure: ""
+dashboard_password: ""
+dashboard_user: ""
 
 # SSL
 etcd_cert_dir: "/etc/ssl/etcd/ssl"

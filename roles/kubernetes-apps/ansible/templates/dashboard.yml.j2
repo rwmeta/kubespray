@@ -107,4 +107,28 @@ spec:
     targetPort: 9090
   selector:
     k8s-app: kubernetes-dashboard
+{% if dashboard_ingres and  dashboard_host|length > 1 %}
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: example
+  annotations:
+  {% if traefik_enabled %}
+    kubernetes.io/ingress.class: traefik
+  {% endif %}
+  {% if dashboard_secure %}
+    ingress.kubernetes.io/auth-type: basic
+    ingress.kubernetes.io/auth-secret: dashboard_auth
+  {% endif %}
+spec:
+  rules:
+  - host: {{ dashboard_host }}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: kubernetes-dashboard
+          servicePort: 80
+{% endif %}
 

@@ -18,3 +18,10 @@
     state: "latest"
   with_items: "{{ manifests.results }}"
   when: inventory_hostname == groups['kube-master'][0]
+
+- name: Generate dasboard htpasswd
+  htpasswd:
+    create: "yes"
+    path: /etc/nginx/passwdfile
+    name: janedoe
+    password: '9s36?;fyNp'
