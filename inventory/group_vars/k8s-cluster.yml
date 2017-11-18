@@ -146,12 +146,27 @@ k8s_image_pull_policy: IfNotPresent
 
 # Kubernetes dashboard (available at http://first_master:6443/ui by default)
 dashboard_enabled: true
+#dashboard_ingress: false
+#dashboard_host: "dashboard.example.com"
+#dashboard_secure: false
+#dashboard_user: "admin"
+#dashboard_password: "{{ lookup('password', 'credentials/kube_dashboard length=15 chars=ascii_letters,digits') }}"
 
 # Monitoring apps for k8s
 efk_enabled: false
 
 # Helm deployment
-helm_enabled: false
+helm_enabled: true
+
+# Ajax friendly Helm Tiller Proxy https://appscode.com/products/swift
+#swift_enabled: false
+#swift_image: "appscode/swift"
+#swift_version: "0.5.0"
+#swift_ingress: false
+#swift_host: "swift.example.com"
+#swift_secure: false
+#swift_user: "admin"
+#swift_password: "{{ lookup('password', 'credentials/kube_swift length=15 chars=ascii_letters,digits') }}"
 
 # Istio deployment
 istio_enabled: false

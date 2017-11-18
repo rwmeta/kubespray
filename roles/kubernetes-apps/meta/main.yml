@@ -20,6 +20,12 @@ dependencies:
     tags:
       - apps
       - helm
+  - role: kubernetes-apps/swift
+    when: swift_enabled and helm_enabled
+    tags:
+      - apps
+      - helm
+      - swift
   - role: kubernetes-apps/local_volume_provisioner
     when: local_volumes_enabled
     tags:

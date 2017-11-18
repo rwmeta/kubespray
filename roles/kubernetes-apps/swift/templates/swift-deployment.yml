@@ -1,0 +1,74 @@
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: swift
+  name: swift
+  namespace: {{ system_namespace }}
+spec:
+  template:
+    metadata:
+      labels:
+        app: swift
+    spec:
+      serviceAccountName: swift
+      containers:
+      - args:
+        - run
+        - --v=3
+        - --connector=incluster
+        - --analytics=false
+        image: {{swift_image}}:{{swift_version}}
+        imagePullPolicy: Always
+        name: swift
+        ports:
+        - containerPort: 9855
+          name: pt
+          protocol: TCP
+        volumeMounts:
+            - mountPath: /tmp
+              name: chart-volume
+      volumes:
+        - name: chart-volume
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: swift
+  namespace: {{ system_namespace }}
+  labels:
+    app: swift
+spec:
+  ports:
+  - name: pt
+    port: 9855
+    targetPort: pt
+  selector:
+    app: swift
+{% if swift_ingress and swift_host|length > 1 %}
+---
+kind: Ingress
+apiVersion: extensions/v1beta1
+metadata:
+  name: swift
+  namespace: {{ system_namespace }}
+  annotations:
+{% if traefik_enabled %}
+    kubernetes.io/ingress.class: traefik
+{% endif %}
+{% if swift_secure %}
+    ingress.kubernetes.io/auth-type: basic
+    ingress.kubernetes.io/auth-secret: swift-auth
+{% endif %}
+spec:
+  rules:
+  - host: {{ swift_host }}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: swift
+          servicePort: 9855
+{% endif %}

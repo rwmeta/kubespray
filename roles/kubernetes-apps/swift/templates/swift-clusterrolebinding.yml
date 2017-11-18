@@ -1,0 +1,27 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRole
+metadata:
+  name: swift
+  labels:
+    app: swift
+rules:
+- apiGroups: [""]
+  resources: ["services"]
+  verbs: ["list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: swift
+  namespace: {{ system_namespace }}
+  labels:
+    app: swift
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: swift
+subjects:
+- kind: ServiceAccount
+  name: swift
+  namespace: {{ system_namespace }}

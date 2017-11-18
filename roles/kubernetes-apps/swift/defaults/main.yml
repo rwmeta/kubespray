@@ -1,0 +1,11 @@
+---
+# Ajax friendly Helm Tiller Proxy https://appscode.com/products/swift
+swift_enabled: false
+swift_image: "appscode/swift"
+swift_version: "0.5.0"
+swift_ingress: false
+swift_host: "swift.example.com"
+swift_secure: false
+swift_user: "admin"
+swift_password: "set_me"
+

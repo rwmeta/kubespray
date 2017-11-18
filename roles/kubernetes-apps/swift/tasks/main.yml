@@ -1,0 +1,52 @@
+---
+- name: Swift | Lay Down swift manifests (RBAC)
+  template:
+    src: "{{item.file}}"
+    dest: "{{kube_config_dir}}/{{item.file}}"
+  with_items:
+    - {name: swift, file: swift-sa.yml, type: sa}
+    - {name: swift, file: swift-clusterrolebinding.yml, type: clusterrolebinding}
+  register: manifests
+  when: rbac_enabled
+
+- name: Swift Proxy | Apply swift manifests (RBAC)
+  kube:
+    name: "{{item.item.name}}"
+    namespace: "{{ system_namespace }}"
+    kubectl: "{{bin_dir}}/kubectl"
+    resource: "{{item.item.type}}"
+    filename: "{{kube_config_dir}}/{{item.item.file}}"
+    state: "latest"
+  with_items: "{{ manifests.results }}"
+  when: rbac_enabled
+
+- name: Swift Proxy | Generate swift proxy htpasswd
+  htpasswd:
+    create: yes
+    path: "{{kube_config_dir}}/swift_auth"
+    name: "{{swift_user}}"
+    password: "{{swift_password}}"
+  when: swift_ingress and swift_secure
+
+- name: Swift Proxy | Create swift proxy secret
+  shell: "{{ bin_dir }}/kubectl create secret generic swift-auth --from-file=auth={{kube_config_dir}}/swift_auth --dry-run -o yaml | {{ bin_dir }}/kubectl apply -n {{system_namespace}} -f -"
+  when: swift_ingress and swift_secure
+  run_once: true
+
+- name: Swift Proxy | Lay Down swift deployment Manifests
+  template:
+    src: "{{item.file}}"
+    dest: "{{kube_config_dir}}/{{item.file}}"
+  with_items:
+    - {name: swift, file: swift-deployment.yml, type: deploy}
+  register: manifests
+
+- name: Swift Proxy | Apply Swift Proxy Deployment Manifests
+  kube:
+    name: "{{item.item.name}}"
+    namespace: "{{ system_namespace }}"
+    kubectl: "{{bin_dir}}/kubectl"
+    resource: "{{item.item.type}}"
+    filename: "{{kube_config_dir}}/{{item.item.file}}"
+    state: "latest"
+  with_items: "{{ manifests.results }}"

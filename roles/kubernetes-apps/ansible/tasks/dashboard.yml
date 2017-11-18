@@ -1,4 +1,17 @@
 ---
+- name: Kubernetes Apps | Generate dasboard htpasswd
+  htpasswd:
+    create: yes
+    path: "{{kube_config_dir}}/dashboard_auth"
+    name: "{{dashboard_user}}"
+    password: "{{dashboard_password}}"
+  when: dashboard_ingress == True and dashboard_secure == True
+
+- name: Kubernetes Apps | Create secret
+  shell: "{{ bin_dir }}/kubectl create secret generic dashboard-auth --from-file=auth={{kube_config_dir}}/dashboard_auth --dry-run -o yaml | {{ bin_dir }}/kubectl apply -n {{system_namespace}} -f -"
+  when: dashboard_ingress == True and dashboard_secure == True
+  run_once: true
+
 - name: Kubernetes Apps | Lay down dashboard template
   template:
     src: "{{item.file}}"
@@ -18,10 +31,3 @@
     state: "latest"
   with_items: "{{ manifests.results }}"
   when: inventory_hostname == groups['kube-master'][0]
-
-- name: Generate dasboard htpasswd
-  htpasswd:
-    create: "yes"
-    path: /etc/nginx/passwdfile
-    name: janedoe
-    password: '9s36?;fyNp'
