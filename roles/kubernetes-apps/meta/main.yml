@@ -46,6 +46,11 @@ dependencies:
       - apps
       - traefik
 
+  - role: kubernetes-apps/prometheus
+    when: prometheus_enabled
+    tags:
+      - apps
+      - prometheus
 #  - role: kubernetes-apps/rook
 #    when: rook_enabled
 #    tags:

@@ -1,0 +1,10 @@
+---
+prometheus_enabled: false
+prometheus_namespace: "monitoring"
+prometheus_image_repo: quay.io/coreos/prometheus-operator
+prometheus_image_tag: v0.14.0
+prometheus_ingress: false
+prometheus_host: ""
+prometheus_secure: false
+prometheus_password: "set_me"
+prometheus_user: "admin"

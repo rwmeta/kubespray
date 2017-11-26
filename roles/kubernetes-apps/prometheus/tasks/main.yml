@@ -1,0 +1,58 @@
+---
+- name: Prometheus | Create monitoring namespaces
+  shell: "{{ bin_dir }}/kubectl create namespace"
+  when: prometheus_ingress
+  run_once: true
+
+- name: Prometheus | Generate prometheus htpasswd
+  htpasswd:
+    create: yes
+    path: "{{kube_config_dir}}/prometheus_auth"
+    name: "{{prometheus_user}}"
+    password: "{{prometheus_password}}"
+  when: prometheus_ingress and prometheus_secure
+
+- name: Prometheus | Create secret
+  shell: "{{ bin_dir }}/kubectl create secret generic prometheus-auth --from-file=auth={{kube_config_dir}}/prometheus_auth --dry-run -o yaml | {{ bin_dir }}/kubectl apply -n {{system_namespace}} -f -"
+  when: prometheus_ingress and prometheus_secure
+  run_once: true
+
+- name: "Prometheus | Write Prometheus manifests (RBAC)"
+  template:
+    src: "{{ item }}"
+    dest: "{{ kube_config_dir }}/{{ item }}"
+  with_items:
+    - "prometheus-sa.yml"
+    - "prometheus-clusterrolebinding.yml"
+  run_once: true
+  when: rbac_enabled
+
+- name: "Prometheus | Create Serviceaccount and Clusterrolebinding (RBAC)"
+  command: "{{ bin_dir }}/kubectl apply -f {{ kube_config_dir }}/{{ item }} -n {{ system_namespace }}"
+  with_items:
+    - "prometheus-sa.yml"
+    - "prometheus-clusterrolebinding.yml"
+  run_once: true
+  when: rbac_enabled
+
+- name: "Prometheus | Write Prometheus Deployment"
+  template:
+    src: prometheus-operator-deployment.yml.j2
+    dest: "{{ kube_config_dir }}/prometheus-operator-deployment.yaml"
+  register: prometheus_deployment_manifest
+
+- name: "Prometheus | Create Prometheus Deployment"
+  command: "{{ bin_dir }}/kubectl apply -f {{ kube_config_dir }}/prometheus-deployment.yaml -n {{ system_namespace }}"
+  run_once: true
+  when: prometheus_deployment_manifest.changed
+
+- name: "Prometheus | Write Prometheus service "
+  template:
+    src: prometheus-service.yml.j2
+    dest: "{{ kube_config_dir }}/prometheus-service.yaml"
+  register: prometheus_service_manifest
+
+- name: "Prometheus | Create Prometheus service"
+  command: "{{ bin_dir }}/kubectl apply -f {{ kube_config_dir }}/prometheus-service.yaml -n {{ system_namespace }}"
+  run_once: true
+  when: prometheus_service_manifest.changed

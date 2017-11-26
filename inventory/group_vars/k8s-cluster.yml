@@ -152,6 +152,13 @@ dashboard_enabled: true
 #dashboard_user: "admin"
 #dashboard_password: "{{ lookup('password', 'credentials/kube_dashboard length=15 chars=ascii_letters,digits') }}"
 
+prometheus_enabled: true
+prometheus_ingress: true
+prometheus_host: "prometheus.monitoring.kb.1ad.ru"
+prometheus_secure: true
+prometheus_user: "admin"
+prometheus_password: "{{ lookup('password', 'credentials/kube_prometheus length=15 chars=ascii_letters,digits') }}"
+
 # Monitoring apps for k8s
 efk_enabled: false
 

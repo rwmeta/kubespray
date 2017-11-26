@@ -1,0 +1,42 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus
+  namespace: "{{ system_namespace }}"
+spec:
+  type: ClusterIP
+  ports:
+  - name: web
+    port: 9090
+    protocol: TCP
+    targetPort: web
+  selector:
+    prometheus: prometheus
+
+{% if prometheus_ingress and prometheus_host|length > 1 %}
+---
+kind: Ingress
+apiVersion: extensions/v1beta1
+metadata:
+  name: prometheus
+  namespace: "{{ system_namespace }}"
+  annotations:
+{% if traefik_enabled %}
+    kubernetes.io/ingress.class: traefik
+{% endif %}
+{% if prometheus_secure %}
+    ingress.kubernetes.io/auth-type: basic
+    ingress.kubernetes.io/auth-secret: prometheus-auth
+{% endif %}
+spec:
+  rules:
+  - host: {{ prometheus_host }}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: prometheus
+          servicePort: 9090
+{% endif %}
+
