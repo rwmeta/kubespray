@@ -18,6 +18,7 @@ spec:
       hostNetwork: true
       containers:
       - image: traefik:alpine
+        imagePullPolicy: Always
         name: traefik-ingress-lb
         ports:
         - name: http
@@ -32,3 +33,7 @@ spec:
         - --web
         - --web.address=:8888
         - --kubernetes
+        - --retry
+        - --retry.attempts=5
+        - --web.metrics=true
+        - --web.metrics.prometheus=true
