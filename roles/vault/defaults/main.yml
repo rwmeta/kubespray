@@ -44,7 +44,8 @@ vault_bind_address: 0.0.0.0
 vault_port: 8200
 vault_etcd_url: "{{ etcd_access_addresses }}"
 
-vault_default_lease_ttl: 720h
+# 8y default lease
+vault_default_lease_ttl: 70080h
 vault_max_lease_ttl: 87600h
 
 vault_temp_config:
@@ -83,11 +84,7 @@ vault_ca_options:
     format: pem
     ttl: "{{ vault_max_lease_ttl }}"
     exclude_cn_from_sans: true
-    altnames:
-      - "vault.{{ system_namespace }}.svc.{{ dns_domain }}"
-      - "vault.{{ system_namespace }}.svc"
-      - "vault.{{ system_namespace }}"
-      - "vault"
+    alt_names: "vault.{{ system_namespace }}.svc.{{ dns_domain }},vault.{{ system_namespace }}.svc,vault.{{ system_namespace }},vault"
   etcd:
     common_name: etcd
     format: pem

@@ -58,7 +58,7 @@ nginx_cpu_requests: 25m
 #   - extensions/v1beta1/deployments=true
 
 nginx_image_repo: nginx
-nginx_image_tag: 1.11.4-alpine
+nginx_image_tag: 1.13
 
 etcd_config_dir: /etc/ssl/etcd
 
@@ -78,7 +78,11 @@ kubelet_custom_flags: []
 kube_hyperkube_image_repo: ""
 
 # If non-empty, will use this string as identification instead of the actual hostname
-kube_override_hostname: "{{ ansible_hostname }}"
+kube_override_hostname: >-
+  {%- if cloud_provider is defined -%}
+  {%- else -%}
+  {{ ansible_hostname }}
+  {%- endif -%}
 
 # cAdvisor port
 kube_cadvisor_port: 0

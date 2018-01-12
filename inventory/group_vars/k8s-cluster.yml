@@ -23,7 +23,7 @@ kube_users_dir: "{{ kube_config_dir }}/users"
 kube_api_anonymous_auth: false
 
 ## Change this to use another Kubernetes version, e.g. a current beta release
-kube_version: v1.8.3
+kube_version: v1.9.0
 
 # Where the binaries will be downloaded.
 # Note: ensure that you've enough disk space (about 1G)
@@ -65,7 +65,7 @@ kube_token_auth: true
 # kube_oidc_groups_claim: groups
 
 
-# Choose network plugin (calico, weave or flannel)
+# Choose network plugin (calico, contiv, weave or flannel)
 # Can also be set to 'cloud', which lets the cloud provider setup appropriate routing
 kube_network_plugin: weave
 
@@ -139,12 +139,13 @@ docker_bin_dir: "/usr/bin"
 etcd_deployment_type: docker
 kubelet_deployment_type: host
 vault_deployment_type: docker
-helm_deployment_type: docker
+helm_deployment_type: host
 
 # K8s image pull policy (imagePullPolicy)
 k8s_image_pull_policy: IfNotPresent
 
-# Kubernetes dashboard (available at http://first_master:6443/ui by default)
+# Kubernetes dashboard
+# RBAC required. see docs/getting-started.md for access details.
 dashboard_enabled: true
 #dashboard_ingress: false
 #dashboard_host: "dashboard.example.com"
@@ -179,6 +180,9 @@ traefik_enabled: true
 
 # Local volume provisioner deployment
 local_volumes_enabled: false
+
+# Add Persistent Volumes Storage Class for corresponding cloud provider ( OpenStack is only supported now )
+persistent_volumes_enabled: false
 
 # Make a copy of kubeconfig on the host that runs Ansible in GITDIR/artifacts
 kubeconfig_localhost: true

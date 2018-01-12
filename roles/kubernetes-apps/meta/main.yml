@@ -39,6 +39,11 @@ dependencies:
     tags:
       - apps
       - istio
+  - role: kubernetes-apps/persistent_volumes
+    when: persistent_volumes_enabled
+    tags:
+      - apps
+      - persistent_volumes
 
   - role: kubernetes-apps/traefik
     when: traefik_enabled

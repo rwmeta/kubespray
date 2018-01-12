@@ -85,6 +85,7 @@
     - "{{kube_config_dir}}"
     - /var/lib/kubelet
     - /root/.kube
+    - /root/.helm
     - "{{ etcd_data_dir }}"
     - /etc/ssl/etcd
     - /var/log/calico
@@ -123,6 +124,9 @@
     - "{{ bin_dir }}/helm"
     - "{{ bin_dir }}/calicoctl"
     - "{{ bin_dir }}/weave"
+    - /var/lib/rkt
+    - /etc/vault
+  ignore_errors: yes
   tags:
     - files
 
@@ -149,6 +153,34 @@
   tags:
     - files
     - dns
+
+- name: reset | check cni network device
+  stat:
+    path: /sys/class/net/cni0
+  register: cni
+  when: kube_network_plugin == 'flannel'
+  tags:
+    - flannel
+
+- name: reset | remove the network device created by the flannel
+  command: ip link del cni0
+  when: kube_network_plugin == 'flannel' and cni.stat.exists
+  tags:
+    - flannel
+
+- name: reset | check flannel network device
+  stat:
+    path: /sys/class/net/flannel.1
+  register: flannel
+  when: kube_network_plugin == 'flannel'
+  tags:
+    - flannel
+
+- name: reset | remove the network device created by the flannel
+  command: ip link del flannel.1
+  when: kube_network_plugin == 'flannel' and flannel.stat.exists
+  tags:
+    - flannel
 
 - name: reset | Restart network
   service:

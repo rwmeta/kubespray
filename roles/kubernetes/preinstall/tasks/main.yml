@@ -64,10 +64,10 @@
 
 - name: check cloud_provider value
   fail:
-    msg: "If set the 'cloud_provider' var must be set either to 'generic', 'gce', 'aws', 'azure', 'openstack' or 'vsphere'"
+    msg: "If set the 'cloud_provider' var must be set either to 'generic', 'gce', 'aws', 'azure', 'openstack', 'vsphere', or external"
   when:
     - cloud_provider is defined
-    - cloud_provider not in ['generic', 'gce', 'aws', 'azure', 'openstack', 'vsphere']
+    - cloud_provider not in ['generic', 'gce', 'aws', 'azure', 'openstack', 'vsphere', 'external']
   tags:
     - cloud-provider
     - facts
@@ -89,13 +89,14 @@
     - "/etc/cni/net.d"
     - "/opt/cni/bin"
   when:
-    - kube_network_plugin in ["calico", "weave", "canal", "flannel"]
+    - kube_network_plugin in ["calico", "weave", "canal", "flannel", "contiv"]
     - inventory_hostname in groups['k8s-cluster']
   tags:
     - network
     - calico
     - weave
     - canal
+    - contiv
     - bootstrap-os
 
 - include: resolvconf.yml
@@ -116,9 +117,35 @@
   delay: "{{ retry_stagger | random + 3 }}"
   when:
     - ansible_pkg_mgr == 'yum'
+    - ansible_distribution != 'RedHat'
     - not is_atomic
-  tags:
-    - bootstrap-os
+  tags: bootstrap-os
+
+- name: Expire management cache (YUM) for Updation - Redhat
+  shell: yum clean expire-cache
+  register: expire_cache_output
+  until: expire_cache_output|succeeded
+  retries: 4
+  delay: "{{ retry_stagger | random + 3 }}"
+  when:
+    - ansible_pkg_mgr == 'yum'
+    - ansible_distribution == 'RedHat'
+    - not is_atomic
+  tags: bootstrap-os
+
+- name: Update package management cache (YUM) - Redhat
+  shell: yum makecache
+  register: make_cache_output
+  until: make_cache_output|succeeded
+  retries: 4
+  delay: "{{ retry_stagger | random + 3 }}"
+  when:
+    - ansible_pkg_mgr == 'yum'
+    - ansible_distribution == 'RedHat'
+    - expire_cache_output.rc == 0
+    - not is_atomic
+  tags: bootstrap-os
+
 
 - name: Install latest version of python-apt for Debian distribs
   apt:
