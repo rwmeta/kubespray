@@ -1,0 +1,22 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    component: ingress
+    heritage: Tiller
+    prometheus: kube-prometheus
+    release: kube-prometheus
+  name: exporter-traefik-lb
+  namespace: monitoring
+spec:
+  jobLabel: exporter-traefik-lb
+  namespaceSelector:
+    matchNames:
+    - kube-system
+  endpoints:
+  - port: admin
+    interval: 30s
+  selector:
+    matchLabels:
+      app: traefik-lb
+      component: ingress

@@ -147,6 +147,7 @@ k8s_image_pull_policy: IfNotPresent
 # Kubernetes dashboard
 # RBAC required. see docs/getting-started.md for access details.
 dashboard_enabled: true
+dashboard_image_tag: v1.8.1
 #dashboard_ingress: false
 #dashboard_host: "dashboard.example.com"
 #dashboard_secure: false

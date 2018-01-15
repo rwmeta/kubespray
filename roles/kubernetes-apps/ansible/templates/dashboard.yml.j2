@@ -150,8 +150,7 @@ spec:
         - containerPort: 8443
           protocol: TCP
         args:
-          - --tls-key-file=/certs/{{ dashboard_tls_key_file }}
-          - --tls-cert-file=/certs/{{ dashboard_tls_cert_file }}
+          - --auto-generate-certificates
           - --authentication-mode=token{% if kube_basic_auth|default(false) %},basic{% endif %}
           # Uncomment the following line to manually specify Kubernetes API server Host
           # If not specified, Dashboard will attempt to auto discover the API server and connect
